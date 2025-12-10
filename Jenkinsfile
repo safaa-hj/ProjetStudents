@@ -54,8 +54,9 @@ stage('Deploy to Kubernetes') {
                 sh 'kubectl get svc -n devops'
             }
         }
+           */
     }
-    */
+
     post {
         success {
             echo 'Pipeline completed successfully!'
