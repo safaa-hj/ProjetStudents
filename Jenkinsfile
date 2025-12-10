@@ -36,15 +36,17 @@ pipeline {
             }
         }
         
-        stage('Deploy to Kubernetes') {
-            steps {
-                echo 'Deploying to Kubernetes...'
-                sh 'kubectl apply -f mysql-deployment.yaml -n devops'
-                sh 'kubectl apply -f spring-deployment.yaml -n devops'
-                sh 'kubectl rollout restart deployment spring-app -n devops'
-            }
-        }
-        
+/*
+stage('Deploy to Kubernetes') {
+    steps {
+        echo 'Deploying to Kubernetes...'
+        sh 'kubectl apply -f mysql-deployment.yaml -n devops'
+        sh 'kubectl apply -f spring-deployment.yaml -n devops'
+        sh 'kubectl rollout restart deployment spring-app -n devops'
+    }
+}
+*/
+
         stage('Verify Deployment') {
             steps {
                 echo 'Verifying deployment...'
