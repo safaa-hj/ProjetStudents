@@ -45,7 +45,7 @@ stage('Deploy to Kubernetes') {
         sh 'kubectl rollout restart deployment spring-app -n devops'
     }
 }
-*/
+
 
         stage('Verify Deployment') {
             steps {
@@ -55,7 +55,7 @@ stage('Deploy to Kubernetes') {
             }
         }
     }
-    
+    */
     post {
         success {
             echo 'Pipeline completed successfully!'
