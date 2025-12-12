@@ -28,7 +28,7 @@ pipeline {
                     mvn sonar:sonar \
                     -Dsonar.host.url=http://192.168.50.4:9000 \
                     -Dsonar.login=admin \
-                    -Dsonar.password=sonar
+                    -Dsonar.password=Safahajji123+
                 '''
             }
         }
