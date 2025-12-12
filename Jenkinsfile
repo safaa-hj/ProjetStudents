@@ -36,7 +36,7 @@ pipeline {
             }
         }
         
-/*
+
 stage('Deploy to Kubernetes') {
     steps {
         echo 'Deploying to Kubernetes...'
@@ -54,8 +54,37 @@ stage('Deploy to Kubernetes') {
                 sh 'kubectl get svc -n devops'
             }
         }
-           */
+
     }
+
+    stages {
+            stage('Checkout') {
+                steps {
+                    echo 'Récupération du code depuis Git'
+                    git branch: 'main',
+                        url: 'https://github.com/votre-username/votre-projet.git'
+                }
+            }
+
+            stage('Clean & Compile') {
+                steps {
+                    echo 'Nettoyage et compilation du projet'
+                    sh 'mvn clean compile'
+                }
+            }
+
+            stage('SonarQube Analysis') {
+                steps {
+                    echo 'Analyse de la qualité du code avec SonarQube'
+                    sh '''
+                        mvn sonar:sonar \
+                        -Dsonar.host.url=http://192.168.50.4:9000 \
+                        -Dsonar.login=admin \
+                        -Dsonar.password=sonar
+                    '''
+                }
+            }
+        }
 
     post {
         success {
