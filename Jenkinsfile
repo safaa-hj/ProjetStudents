@@ -70,7 +70,7 @@ pipeline {
             }
         }
 
-       /* stage('Deploy to Kubernetes') {
+        /* stage('Deploy to Kubernetes') {
             steps {
                 echo 'Deploying to Kubernetes...'
                 script {
@@ -133,8 +133,8 @@ pipeline {
                 sh 'kubectl get svc -n devops'
             }
         }
+        */
     }
-*/
     post {
         success {
             echo '✅ Pipeline completed successfully!'
