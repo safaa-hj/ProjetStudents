@@ -91,15 +91,26 @@ pipeline {
                     // Option 2: Use kubeconfig content from secret text credential
                     // Add your kubeconfig content as a "Secret text" credential with ID 'kubeconfig-content'
                     withCredentials([string(credentialsId: 'kubeconfig-content', variable: 'KUBECONFIG_CONTENT')]) {
-                        sh '''
+                        sh """
+                            set +x  # Disable command echoing to protect sensitive data
                             echo "=== Setting up kubectl configuration ==="
                             
                             # Create .kube directory if it doesn't exist
                             mkdir -p ~/.kube
                             
-                            # Write kubeconfig content to file
-                            echo "$KUBECONFIG_CONTENT" > ~/.kube/config
+                            # Write kubeconfig content to file using cat with here-document
+                            # Using unquoted delimiter so Groovy can expand the variable
+                            cat > ~/.kube/config << KUBECONFIG_EOF
+                            ${KUBECONFIG_CONTENT}
+                            KUBECONFIG_EOF
+                            
                             chmod 600 ~/.kube/config
+                            
+                            # Verify the file was written correctly
+                            echo "Kubeconfig file created"
+                            echo "File size: \$(wc -c < ~/.kube/config) bytes"
+                            echo "First 3 lines:"
+                            head -3 ~/.kube/config || true
                             
                             echo "=== Kubectl Configuration Diagnostics ==="
                             echo "Checking kubectl version..."
@@ -150,7 +161,7 @@ pipeline {
                             
                             echo "Restarting Spring app deployment..."
                             kubectl rollout restart deployment spring-app -n devops || echo "INFO: Could not restart deployment (may not exist yet, will be created)"
-                        '''
+                        """
                     }
                 }
             }
