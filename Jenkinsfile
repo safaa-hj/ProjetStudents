@@ -21,7 +21,7 @@ pipeline {
             }
         }
 
-        stage('SonarQube Analysis') {
+        /*stage('SonarQube Analysis') {
             steps {
                 echo 'Analyse de la qualité du code avec SonarQube'
                 sh '''
@@ -31,7 +31,22 @@ pipeline {
                     -Dsonar.password=Safahajji123+
                 '''
             }
+        }*/
+
+        stage('SonarQube Analysis') {
+            steps {
+                echo 'Analyse de la qualité du code avec SonarQube'
+                withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
+                    sh '''
+                        mvn sonar:sonar \
+                        -Dsonar.projectKey=student-management \
+                        -Dsonar.host.url=http://192.168.50.4:9000 \
+                        -Dsonar.token=$SONAR_TOKEN
+                    '''
+                }
+            }
         }
+
 
         stage('Build with Maven') {
             steps {
