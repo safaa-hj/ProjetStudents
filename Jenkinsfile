@@ -70,15 +70,43 @@ pipeline {
             }
         }
 
-        stage('Deploy to Kubernetes') {
+       /* stage('Deploy to Kubernetes') {
             steps {
                 echo 'Deploying to Kubernetes...'
                 script {
                     sh '''
-                        echo "Checking kubectl connectivity..."
-                        kubectl cluster-info || echo "Warning: Could not reach cluster"
-                        kubectl get nodes || echo "Warning: Could not list nodes"
+                        echo "=== Kubectl Configuration Diagnostics ==="
+                        echo "Checking kubectl version..."
+                        kubectl version --client || echo "kubectl not found or not working"
                         
+                        echo "Checking current context..."
+                        kubectl config current-context || echo "No context set"
+                        
+                        echo "Checking kubeconfig..."
+                        kubectl config view --minify || echo "Could not view kubeconfig"
+                        
+                        echo "Checking API server connectivity..."
+                        if kubectl cluster-info 2>&1 | grep -q "invalid character"; then
+                            echo "ERROR: kubectl is receiving HTML instead of JSON from API server"
+                            echo "This usually means:"
+                            echo "  1. API server URL is incorrect in kubeconfig"
+                            echo "  2. API server is behind a proxy/load balancer returning HTML"
+                            echo "  3. Authentication is failing and redirecting to HTML page"
+                            echo ""
+                            echo "Please check your kubeconfig configuration in Jenkins"
+                            exit 1
+                        fi
+                        
+                        echo "Checking if namespace exists..."
+                        if ! kubectl get namespace devops 2>/dev/null; then
+                            echo "Creating devops namespace..."
+                            kubectl create namespace devops || {
+                                echo "Failed to create namespace"
+                                exit 1
+                            }
+                        fi
+                        
+                        echo "=== Applying Deployments ==="
                         echo "Applying MySQL deployment..."
                         kubectl apply -f kubernetes/mysql-deployment.yaml -n devops --validate=false || {
                             echo "Failed to apply mysql-deployment.yaml"
@@ -106,7 +134,7 @@ pipeline {
             }
         }
     }
-
+*/
     post {
         success {
             echo '✅ Pipeline completed successfully!'
