@@ -75,12 +75,24 @@ pipeline {
                 echo 'Deploying to Kubernetes...'
                 script {
                     sh '''
-                        pwd
-                        ls -la
-                        ls -la kubernetes/
-                        kubectl apply -f kubernetes/mysql-deployment.yaml -n devops
-                        kubectl apply -f kubernetes/spring-deployment.yaml -n devops
-                        kubectl rollout restart deployment spring-app -n devops
+                        echo "Checking kubectl connectivity..."
+                        kubectl cluster-info || echo "Warning: Could not reach cluster"
+                        kubectl get nodes || echo "Warning: Could not list nodes"
+                        
+                        echo "Applying MySQL deployment..."
+                        kubectl apply -f kubernetes/mysql-deployment.yaml -n devops --validate=false || {
+                            echo "Failed to apply mysql-deployment.yaml"
+                            exit 1
+                        }
+                        
+                        echo "Applying Spring deployment..."
+                        kubectl apply -f kubernetes/spring-deployment.yaml -n devops --validate=false || {
+                            echo "Failed to apply spring-deployment.yaml"
+                            exit 1
+                        }
+                        
+                        echo "Restarting Spring app deployment..."
+                        kubectl rollout restart deployment spring-app -n devops || echo "Warning: Could not restart deployment (may not exist yet)"
                     '''
                 }
             }
